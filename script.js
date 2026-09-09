@@ -1,6 +1,6 @@
 /**
  * Alex Vance Portfolio Architecture
- * Engine: Vanilla JavaScript (ES6+)
+ * Engine: Vanilla JavaScript (ES6+) - Optimized & Error-Free
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const navLinks = document.querySelectorAll('.nav-link');
 
   const handleScrollNavbar = () => {
+    if (!navbar) return;
     if (window.scrollY > 40) {
       navbar.classList.add('scrolled');
     } else {
@@ -23,23 +24,24 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const toggleMobileMenu = () => {
+    if (!navMenu) return;
     const isOpen = navMenu.classList.contains('is-open');
     if (isOpen) {
       navMenu.classList.remove('is-open');
-      hamburgerBtn.setAttribute('aria-expanded', 'false');
+      hamburgerBtn?.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
     } else {
       navMenu.classList.add('is-open');
-      hamburgerBtn.setAttribute('aria-expanded', 'true');
+      hamburgerBtn?.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
     }
   };
 
-  hamburgerBtn.addEventListener('click', toggleMobileMenu);
+  hamburgerBtn?.addEventListener('click', toggleMobileMenu);
 
   navLinks.forEach(link => {
     link.addEventListener('click', () => {
-      if (navMenu.classList.contains('is-open')) {
+      if (navMenu?.classList.contains('is-open')) {
         toggleMobileMenu();
       }
     });
@@ -72,9 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressBar = document.getElementById('progressBar');
 
   const updateProgressBar = () => {
+    if (!progressBar) return;
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercent = (scrollTop / docHeight) * 100;
+    const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
     progressBar.style.width = `${scrollPercent}%`;
   };
 
@@ -85,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const cursorOutline = document.getElementById('cursorOutline');
 
   const moveCursor = (e) => {
+    if (!cursorDot || !cursorOutline) return;
     document.body.classList.add('cursor-active');
     const posX = e.clientX;
     const posY = e.clientY;
@@ -110,20 +114,21 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Scroll Reveal Animations (Intersection Observer)
   // ------------------------------------------------------------------
   const revealItems = document.querySelectorAll('.reveal-item');
-
-  const revealObserver = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-revealed');
-        observer.unobserve(entry.target);
-      }
+  if (revealItems.length > 0) {
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: '0px 0px -40px 0px'
     });
-  }, {
-    threshold: 0.15,
-    rootMargin: '0px 0px -40px 0px'
-  });
 
-  revealItems.forEach(item => revealObserver.observe(item));
+    revealItems.forEach(item => revealObserver.observe(item));
+  }
 
   // ------------------------------------------------------------------
   // 5. Statistics Counter Animation
@@ -133,9 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const animateCounters = () => {
     statNumbers.forEach(stat => {
-      const target = parseInt(stat.getAttribute('data-target'), 10);
+      const target = parseInt(stat.getAttribute('data-target'), 10) || 0;
       let count = 0;
-      const speed = target / 40;
+      const speed = target / 40 || 1;
 
       const updateCount = () => {
         count += speed;
@@ -183,11 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       projectCards.forEach(card => {
         const category = card.getAttribute('data-category');
-
         if (filterValue === 'all' || filterValue === category) {
           card.classList.remove('is-hidden');
+          card.style.display = 'block';
         } else {
           card.classList.add('is-hidden');
+          card.style.display = 'none';
         }
       });
     });
@@ -202,9 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const messageInput = document.getElementById('userMessage');
   const formStatus = document.getElementById('formStatus');
 
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
@@ -213,27 +217,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
       document.querySelectorAll('.form-group').forEach(group => group.classList.remove('has-error'));
 
-      if (!nameInput.value.trim()) {
-        nameInput.parentElement.classList.add('has-error');
+      if (!nameInput?.value.trim()) {
+        nameInput?.parentElement?.classList.add('has-error');
         isValid = false;
       }
 
-      if (!emailInput.value.trim() || !validateEmail(emailInput.value.trim())) {
-        emailInput.parentElement.classList.add('has-error');
+      if (!emailInput?.value.trim() || !validateEmail(emailInput.value.trim())) {
+        emailInput?.parentElement?.classList.add('has-error');
         isValid = false;
       }
 
-      if (!messageInput.value.trim()) {
-        messageInput.parentElement.classList.add('has-error');
+      if (!messageInput?.value.trim()) {
+        messageInput?.parentElement?.classList.add('has-error');
         isValid = false;
       }
 
       if (isValid) {
-        formStatus.textContent = 'Sending message...';
-        formStatus.style.color = 'var(--text-primary)';
+        if (formStatus) {
+          formStatus.textContent = 'Sending message...';
+          formStatus.style.color = 'var(--text-primary, #000)';
+        }
 
         setTimeout(() => {
-          formStatus.textContent = 'Thank you. Your message has been sent successfully.';
+          if (formStatus) {
+            formStatus.textContent = 'Thank you. Your message has been sent successfully.';
+            formStatus.style.color = 'green';
+          }
           contactForm.reset();
         }, 1200);
       }
@@ -244,11 +253,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. Back to Top Scroll
   // ------------------------------------------------------------------
   const backToTopBtn = document.getElementById('backToTop');
-  if (backToTopBtn) {
-    backToTopBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
+  backToTopBtn?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   // Global Scroll Listener
   window.addEventListener('scroll', () => {
@@ -257,8 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
     observeActiveSection();
   });
 });
+
 // ------------------------------------------------------------------
-// 9. Auth UI & Full OTP Verification Logic (With Forgot Password & Mail Alerts)
+// 9. Auth UI & Full OTP Verification Logic
 // ------------------------------------------------------------------
 const tabLoginBtn = document.getElementById('tabLoginBtn');
 const tabRegisterBtn = document.getElementById('tabRegisterBtn');
@@ -268,21 +276,20 @@ const registerSection = document.getElementById('registerSection');
 // Tab Switch Functionality
 tabLoginBtn?.addEventListener('click', () => {
   tabLoginBtn.classList.add('active');
-  tabRegisterBtn.classList.remove('active');
-  loginSection.classList.add('active');
-  registerSection.classList.remove('active');
+  tabRegisterBtn?.classList.remove('active');
+  loginSection?.classList.add('active');
+  registerSection?.classList.remove('active');
 });
 
 tabRegisterBtn?.addEventListener('click', () => {
   tabRegisterBtn.classList.add('active');
-  tabLoginBtn.classList.remove('active');
-  registerSection.classList.add('active');
-  loginSection.classList.remove('active');
+  tabLoginBtn?.classList.remove('active');
+  registerSection?.classList.add('active');
+  loginSection?.classList.remove('active');
 });
 
 const WEB3FORMS_ACCESS_KEY = "ddee9129-153a-41f6-bc3b-320a4563aabb";
 
-// मेल पठाउने Helper Function
 async function sendMail(subject, messageBody) {
   try {
     await fetch("https://api.web3forms.com/submit", {
@@ -299,7 +306,7 @@ async function sendMail(subject, messageBody) {
       })
     });
   } catch (err) {
-    console.log("Mail Send Error:", err);
+    console.error("Mail Send Error:", err);
   }
 }
 
@@ -308,13 +315,15 @@ const registerForm = document.getElementById('registerForm');
 registerForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
-  const password = document.getElementById('regPassword').value;
+  const name = document.getElementById('regName')?.value.trim();
+  const email = document.getElementById('regEmail')?.value.trim().toLowerCase();
+  const password = document.getElementById('regPassword')?.value;
+
+  if (!email || !password) return;
 
   if (localStorage.getItem(`user_${email}`)) {
-    alert('An account with this email already exists. Please sign in.।');
-    tabLoginBtn.click();
+    alert('An account with this email already exists. Please sign in.');
+    tabLoginBtn?.click();
     return;
   }
 
@@ -325,7 +334,7 @@ registerForm?.addEventListener('submit', async (e) => {
 
   const userEnteredOTP = prompt("Please enter the 4-digit OTP code received in your email here.");
 
-  if (userEnteredOTP && parseInt(userEnteredOTP) === generatedOTP) {
+  if (userEnteredOTP && parseInt(userEnteredOTP, 10) === generatedOTP) {
     const userData = { name, email, password };
     localStorage.setItem(`user_${email}`, JSON.stringify(userData));
     
@@ -334,11 +343,11 @@ registerForm?.addEventListener('submit', async (e) => {
       `New Account Created:\n\nName: ${name}\nEmail: ${email}\nTime: ${new Date().toLocaleString()}`
     );
 
-    alert('Account successfully created and verified! Please sign in now.।');
+    alert('Account successfully created and verified! Please sign in now.');
     registerForm.reset();
-    tabLoginBtn.click();
+    tabLoginBtn?.click();
   } else {
-    alert('Incorrect OTP code! Account could not be created. sorry hai');
+    alert('Incorrect OTP code! Account could not be created.');
   }
 });
 
@@ -347,14 +356,16 @@ const loginForm = document.getElementById('loginForm');
 loginForm?.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const password = document.getElementById('loginPassword').value;
+  const email = document.getElementById('loginEmail')?.value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword')?.value;
+
+  if (!email || !password) return;
 
   const storedData = localStorage.getItem(`user_${email}`);
 
   if (!storedData) {
-    alert('No account found with this email. Please create an account first.।');
-    tabRegisterBtn.click();
+    alert('No account found with this email. Please create an account first.');
+    tabRegisterBtn?.click();
     return;
   }
 
@@ -362,31 +373,32 @@ loginForm?.addEventListener('submit', async (e) => {
 
   if (userData.password === password) {
     const loginOTP = Math.floor(1000 + Math.random() * 9000);
-    alert(`For security purposes. (${email}) Login OTP has been sent to your email।`);
+    alert(`For security purposes, a Login OTP has been sent to your email (${email}).`);
     
     await sendMail("Login Verification OTP", `Hello ${userData.name},\n\nYour Login OTP is: ${loginOTP}`);
 
-    const enteredLoginOTP = prompt("Please enter the Login OTP code received in your email.:");
+    const enteredLoginOTP = prompt("Please enter the Login OTP code received in your email:");
 
-    if (enteredLoginOTP && parseInt(enteredLoginOTP) === loginOTP) {
+    if (enteredLoginOTP && parseInt(enteredLoginOTP, 10) === loginOTP) {
       alert(`स्वागत छ, ${userData.name}!`);
       localStorage.setItem('user_authenticated', 'true');
-      document.getElementById('authModal').style.display = 'none';
+      const authModal = document.getElementById('authModal');
+      if (authModal) authModal.style.display = 'none';
 
       await sendMail(
         "User Logged In Alert!", 
         `User successfully logged in:\n\nName: ${userData.name}\nEmail: ${email}\nTime: ${new Date().toLocaleString()}`
       );
     } else {
-      alert('"Incorrect OTP! Login cancelled।');
+      alert('Incorrect OTP! Login cancelled.');
     }
   } else {
-    alert('Incorrect password! Please enter the correct password।');
+    alert('Incorrect password! Please enter the correct password.');
   }
 });
 
-// 3. Forgot Password Logic
-const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+// 3. Forgot Password Logic (Supports both ID and Class)
+const forgotPasswordLink = document.getElementById('forgotPasswordLink') || document.querySelector('.forgotPasswordLink');
 forgotPasswordLink?.addEventListener('click', async (e) => {
   e.preventDefault();
   
@@ -404,12 +416,12 @@ forgotPasswordLink?.addEventListener('click', async (e) => {
   const userData = JSON.parse(storedData);
   const resetOTP = Math.floor(1000 + Math.random() * 9000);
 
- alert(`Password Reset OTP has been sent to your email (${cleanEmail}).`);
+  alert(`Password Reset OTP has been sent to your email (${cleanEmail}).`);
   await sendMail("Password Reset OTP", `Hello ${userData.name},\n\nYour Password Reset OTP is: ${resetOTP}`);
 
   const enteredResetOTP = prompt("Please enter the Reset OTP code received in your email:");
 
-  if (enteredResetOTP && parseInt(enteredResetOTP) === resetOTP) {
+  if (enteredResetOTP && parseInt(enteredResetOTP, 10) === resetOTP) {
     const newPassword = prompt("Please enter your new password:");
     if (newPassword && newPassword.trim() !== "") {
       userData.password = newPassword.trim();
@@ -420,13 +432,13 @@ forgotPasswordLink?.addEventListener('click', async (e) => {
         `The password for user was reset successfully.\n\nName: ${userData.name}\nEmail: ${cleanEmail}\nTime: ${new Date().toLocaleString()}`
       );
 
-      alert("Your password has been successfully changed! Please sign in using your new password.।");
-      tabLoginBtn.click();
+      alert("Your password has been successfully changed! Please sign in using your new password.");
+      tabLoginBtn?.click();
     } else {
-      alert("Password cannot be empty.!");
+      alert("Password cannot be empty!");
     }
   } else {
-    alert("Incorrect OTP code! Password could not be reset.।");
+    alert("Incorrect OTP code! Password could not be reset.");
   }
 });
 
@@ -434,19 +446,20 @@ forgotPasswordLink?.addEventListener('click', async (e) => {
 document.querySelectorAll('.google-auth-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     const userName = prompt("Please enter your full name:");
-    const userEmail = prompt("Please enter your actual email.:");
+    const userEmail = prompt("Please enter your actual email:");
     
     if (userName && userEmail) {
       const googleOTP = Math.floor(1000 + Math.random() * 9000);
-     alert(`Verification OTP has been sent to your email (${userEmail}).`);
+      alert(`Verification OTP has been sent to your email (${userEmail}).`);
       await sendMail("Quick Login OTP", `Hello ${userName},\n\nYour Quick Login OTP is: ${googleOTP}`);
 
-      const enteredG_OTP = prompt("Please enter the OTP code received in your email.:");
+      const enteredG_OTP = prompt("Please enter the OTP code received in your email:");
 
-      if (enteredG_OTP && parseInt(enteredG_OTP) === googleOTP) {
+      if (enteredG_OTP && parseInt(enteredG_OTP, 10) === googleOTP) {
         alert("Verification successful!");
         localStorage.setItem('user_authenticated', 'true');
-        document.getElementById('authModal').style.display = 'none';
+        const authModal = document.getElementById('authModal');
+        if (authModal) authModal.style.display = 'none';
 
         await sendMail(
           "Quick Login Alert!", 
